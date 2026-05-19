@@ -1,0 +1,7 @@
+tool	version	source_or_module	notes
+fastqc	0.11.9	fastqc/0.11.9	Raw read quality control
+trim_galore	0.6.6	trim_galore/0.6.6	Adapter trimming plus FastQC
+STAR	2.7.9a	STAR/2.7.9a	Genome indexing and read alignment
+samtools	1.12	bbc/samtools/samtools-1.12	BAM indexing
+featureCounts	2.0.6	subread/2.0.6	Gene-level counting
+multiqc	1.11	bbc/multiqc/multiqc-1.11	Aggregate QC reporting

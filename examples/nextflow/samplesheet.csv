@@ -1,0 +1,4 @@
+sample,fastq_1,fastq_2,strandedness,seq_platform
+SAMPLE_A,/path/to/fastq/SAMPLE_A_R1.fastq.gz,/path/to/fastq/SAMPLE_A_R2.fastq.gz,auto,ILLUMINA
+SAMPLE_B,/path/to/fastq/SAMPLE_B_R1.fastq.gz,/path/to/fastq/SAMPLE_B_R2.fastq.gz,auto,ILLUMINA
+SAMPLE_C,/path/to/fastq/SAMPLE_C_R1.fastq.gz,/path/to/fastq/SAMPLE_C_R2.fastq.gz,auto,ILLUMINA
