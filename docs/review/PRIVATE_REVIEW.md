@@ -21,6 +21,7 @@ Review date: October 1, 2026
 - Filename/content scan found no credential-pattern files, private keys, institutional email addresses, project identifiers, or absolute `/Users`, `/home`, `/Volumes`, or `/varidata` paths.
 - The user installed and opened the normal R.app distribution. R 4.6.1 reported `R.home()` as `/Library/Frameworks/R.framework/Resources`, and `/usr/local/bin/Rscript` resolved to that framework. No extracted `review-tools/R.framework` runtime or package library was used for the results below.
 - With official binaries in the clean `review-tools/normal-R-library/`, `scripts/star_gene_counts_to_matrix.R` parsed and a two-sample synthetic STAR fixture byte-matched the expected TSV using `edgeR` 4.10.5.
+- The repository smoke workflow passed on the private `review/portfolio-prep-2026-10-01` branch on October 1, 2026.
 - macOS command-line signature checks previously reported `invalid signature` / an internal code-signing error for R.app. The user-opened app showed no warning and functioned normally, but this discrepancy remains unresolved and must not be described as renewed signature verification.
 - The Conda environment was not solved because Conda is unavailable.
 - No alignment, feature counting, HPC submission, real-data analysis, or nf-core execution was attempted.
@@ -35,7 +36,7 @@ The following contribution wording requires author confirmation:
 
 ## Publication Gate
 
-1. Resolve or independently review the macOS signature-check discrepancy and run the private CI workflow successfully.
+1. Resolve or independently review the macOS signature-check discrepancy.
 2. Resolve and test the candidate environment on authorized Linux/Slurm infrastructure.
 3. Run one bounded public-data demonstration, or keep the repository explicitly at orchestration-demo maturity.
 4. Confirm authorship, institutional-release permission, and license choice.

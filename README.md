@@ -128,7 +128,7 @@ Project-specific reference assets, FASTQ naming, and tool paths are supplied thr
 
 ## Local Validation
 
-The May 19, 2026 record below is retained as historical repository documentation. On October 1, 2026, the optional R parser and a synthetic STAR count-matrix fixture passed under the normal installed R 4.6.1 framework. The earlier manually extracted runtime was not used for those results. macOS command-line signature checks for R.app remain unresolved, and the repository's draft GitHub workflow has not yet run; see `docs/review/PRIVATE_REVIEW.md`.
+The May 19, 2026 record below is retained as historical repository documentation. On October 1, 2026, the optional R parser and a synthetic STAR count-matrix fixture passed under the normal installed R 4.6.1 framework. The earlier manually extracted runtime was not used for those results. The repository smoke workflow also passed on the private review branch. macOS command-line signature checks for R.app remain unresolved; see `docs/review/PRIVATE_REVIEW.md`.
 
 Smoke-test assets are provided in `tests/smoke/`. On May 19, 2026, the local smoke test syntax-checked the entrypoints, Slurm templates, Nextflow wrappers, Perl helpers, and the optional R utility, then rendered a demo experiment bundle and dry-ran the full `00` to `06` submission chain. This validates repository structure and submission ordering, but not end-to-end biological execution. The local Mac had `samtools`, `Rscript`, and `perl` available, but did not have `fastqc`, `trim_galore`, `STAR`, `featureCounts`, `multiqc`, or `nextflow` installed at validation time. Full validation notes are tracked in `docs/development/validation.md`.
 
@@ -137,7 +137,7 @@ Smoke-test assets are provided in `tests/smoke/`. On May 19, 2026, the local smo
 | Bash and Perl syntax | Passed locally |
 | Synthetic dependency dry run | Passed locally with exact expected-plan comparison |
 | STAR count-table utility | Parsed and passed a two-sample synthetic fixture with edgeR 4.10.5 |
-| GitHub Actions workflow | Draft present; not yet run |
+| GitHub Actions workflow | Passed on the private review branch |
 | Conda environment | Candidate only; not solved |
 | Slurm and external RNA-seq tools | Not executed |
 | Real-data or biological validation | Not performed |
