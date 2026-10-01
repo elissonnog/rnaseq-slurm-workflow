@@ -2,12 +2,13 @@
 
 set -euo pipefail
 
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+script_dir="${RNASEQ_NF_SCRIPT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 env_file="${1:-$script_dir/../config/nextflow.env}"
 
 if [[ -n "${RNASEQ_NF_ENV:-}" ]]; then
   env_file="$RNASEQ_NF_ENV"
 fi
+env_file="$(cd "$(dirname "$env_file")" && pwd)/$(basename "$env_file")"
 
 if [[ ! -f "$env_file" ]]; then
   printf 'Missing Nextflow env file: %s\n' "$env_file" >&2
@@ -15,7 +16,9 @@ if [[ ! -f "$env_file" ]]; then
 fi
 
 # shellcheck disable=SC1090
+set -a
 source "$env_file"
+set +a
 
 if [[ -z "${SLURM_JOB_ID:-}" ]] && command -v sbatch >/dev/null 2>&1; then
   sbatch_cmd=(
@@ -24,7 +27,7 @@ if [[ -z "${SLURM_JOB_ID:-}" ]] && command -v sbatch >/dev/null 2>&1; then
     --time "${NEXTFLOW_SLURM_TIME:-24:00:00}"
     --cpus-per-task "${NEXTFLOW_SLURM_CPUS:-4}"
     --mem "${NEXTFLOW_SLURM_MEM:-64G}"
-    --export "ALL,RNASEQ_NF_ENV=$env_file"
+    --export "ALL,RNASEQ_NF_SCRIPT_DIR=$script_dir,RNASEQ_NF_ENV=$env_file"
   )
 
   if [[ -n "${NEXTFLOW_SLURM_PARTITION:-}" ]]; then
@@ -37,7 +40,7 @@ if [[ -z "${SLURM_JOB_ID:-}" ]] && command -v sbatch >/dev/null 2>&1; then
     sbatch_cmd+=("${extra_args[@]}")
   fi
 
-  sbatch_cmd+=("$0")
+  sbatch_cmd+=("$script_dir/submit_nfcore_rnaseq.sh")
 
   printf 'Submitting Nextflow wrapper with:'
   printf ' %q' "${sbatch_cmd[@]}"

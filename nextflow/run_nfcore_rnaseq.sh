@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+script_dir="${RNASEQ_NF_SCRIPT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 env_file="${1:-$script_dir/../config/nextflow.env}"
 
 if [[ ! -f "$env_file" ]]; then
@@ -10,9 +10,12 @@ if [[ ! -f "$env_file" ]]; then
   printf 'Copy config/nextflow.env.example to config/nextflow.env and edit it first.\n' >&2
   exit 1
 fi
+env_file="$(cd "$(dirname "$env_file")" && pwd)/$(basename "$env_file")"
 
 # shellcheck disable=SC1090
+set -a
 source "$env_file"
+set +a
 
 require_var() {
   local var_name="$1"

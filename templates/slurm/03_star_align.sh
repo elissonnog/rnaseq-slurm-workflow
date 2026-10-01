@@ -9,7 +9,7 @@
 
 set -euo pipefail
 
-source "$(dirname "$0")/common.sh"
+source "$common_sh"
 load_rnaseq_config
 load_module_if_set "${STAR_MODULE:-}"
 
@@ -18,6 +18,9 @@ trimmed_read2="$TRIM_DIR/${sample}${TRIM_READ2_SUFFIX}"
 
 require_file "$trimmed_read1"
 require_file "$trimmed_read2"
+require_dir "$STAR_INDEX_DIR"
+require_command STAR
+require_threads_within_allocation STAR_ALIGN_THREADS
 mkdir -p "$ALIGN_DIR"
 
 STAR \

@@ -9,11 +9,12 @@
 
 set -euo pipefail
 
-source "$(dirname "$0")/common.sh"
+source "$common_sh"
 load_rnaseq_config
 load_module_if_set "${SAMTOOLS_MODULE:-}"
 
 bam_file="$ALIGN_DIR/${sample}Aligned.sortedByCoord.out.bam"
 require_file "$bam_file"
+require_command samtools
 
 samtools index "$bam_file"

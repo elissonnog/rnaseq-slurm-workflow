@@ -12,7 +12,7 @@ The workflow makes the operational steps of a bulk RNA-seq analysis explicit and
 
 ## Contribution and Provenance
 
-The step order and scientific operations were adapted from the author's applied `mycodes/bulk` scripts, with `bulkEric` used as a Slurm reference. The author confirmed ownership of these workflow scripts on October 1, 2026. Parameterization, portable entrypoints, dry-run testing, synthetic examples, and documentation were produced during assisted portfolio curation. Institutional release permission, final contribution wording, and a license choice remain required before publication; see `docs/review/PRIVATE_REVIEW.md`.
+The step order and scientific operations were adapted from the author's applied `mycodes/bulk` scripts, with `bulkEric` used as a Slurm reference. The author confirmed ownership of these workflow scripts on October 1, 2026. Parameterization, portable entrypoints, dry-run testing, synthetic examples, and documentation were produced during assisted portfolio curation. Institutional release permission and a license choice remain required before publication.
 
 ## Execution Modes
 
@@ -63,7 +63,7 @@ flowchart LR
 | `05_featurecounts.sh` | Produce annotation-based gene counts | featureCounts tables |
 | `06_multiqc.sh` | Aggregate run-level quality reports | MultiQC report |
 
-The optional R utility converts STAR count tables into a sample-by-gene matrix. It does not normalize counts, perform differential expression, or infer biological conclusions.
+The optional R utility converts STAR count tables into a genes-by-samples matrix. It does not normalize counts, perform differential expression, or infer biological conclusions.
 
 ## Installation and Requirements
 
@@ -103,11 +103,13 @@ To run the repository smoke test locally:
 bash tests/smoke/run_slurm_smoke.sh
 ```
 
-The smoke test checks shell/Perl syntax, sample-manifest preservation, generated-script structure, and exact dependency ordering. It does not run Slurm, alignment, counting, or real data.
+The smoke test checks shell/Perl syntax, manifest normalization and rejection rules, generated-script relocation, manifest-ordered featureCounts construction, Nextflow/Slurm command construction, and exact dependency ordering. It uses fake executables and does not run Slurm, alignment, counting, Nextflow, or real data.
 
 For the wrapper-based alternative:
 
 ```bash
+cp config/nextflow.env.example config/nextflow.env
+# Edit paths and site settings in config/nextflow.env first.
 bash nextflow/run_nfcore_rnaseq.sh config/nextflow.env
 ```
 
@@ -128,7 +130,7 @@ Project-specific reference assets, FASTQ naming, and tool paths are supplied thr
 
 ## Local Validation
 
-The May 19, 2026 record below is retained as historical repository documentation. On October 1, 2026, the optional R parser and a synthetic STAR count-matrix fixture passed under the normal installed R 4.6.1 framework. The earlier manually extracted runtime was not used for those results. The repository smoke workflow also passed on the private review branch. macOS command-line signature checks for R.app remain unresolved; see `docs/review/PRIVATE_REVIEW.md`.
+The May 19, 2026 record below is retained as historical repository documentation. On October 1, 2026, the optional R parser and a synthetic STAR count-matrix fixture passed under the normal installed R 4.6.1 framework. The repository smoke workflow also passed on the private review branch.
 
 Smoke-test assets are provided in `tests/smoke/`. On May 19, 2026, the local smoke test syntax-checked the entrypoints, Slurm templates, Nextflow wrappers, Perl helpers, and the optional R utility, then rendered a demo experiment bundle and dry-ran the full `00` to `06` submission chain. This validates repository structure and submission ordering, but not end-to-end biological execution. The local Mac had `samtools`, `Rscript`, and `perl` available, but did not have `fastqc`, `trim_galore`, `STAR`, `featureCounts`, `multiqc`, or `nextflow` installed at validation time. Full validation notes are tracked in `docs/development/validation.md`.
 

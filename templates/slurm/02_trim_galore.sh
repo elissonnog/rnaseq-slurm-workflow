@@ -9,7 +9,7 @@
 
 set -euo pipefail
 
-source "$(dirname "$0")/common.sh"
+source "$common_sh"
 load_rnaseq_config
 load_module_if_set "${TRIM_GALORE_MODULE:-}"
 load_module_if_set "${FASTQC_MODULE:-}"
@@ -19,6 +19,8 @@ read2="$FASTQ_DIR/${sample}${READ2_SUFFIX}"
 
 require_file "$read1"
 require_file "$read2"
+require_command trim_galore
+require_threads_within_allocation TRIM_GALORE_CORES
 mkdir -p "$TRIM_DIR"
 
 trim_galore \

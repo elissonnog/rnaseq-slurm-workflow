@@ -9,9 +9,10 @@
 
 set -euo pipefail
 
-source "$(dirname "$0")/common.sh"
+source "$common_sh"
 load_rnaseq_config
 load_module_if_set "${MULTIQC_MODULE:-}"
+require_command multiqc
 
 mkdir -p "$MULTIQC_DIR"
 

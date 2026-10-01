@@ -1,4 +1,4 @@
 asset_id	description	path_or_uri	version_or_build	notes
 star_fasta	Reference genome FASTA	/path/to/reference.fa	GRCh38	Used for STAR genome generation
 star_gtf	Gene annotation GTF	/path/to/annotation.gtf	GENCODE_or_Ensembl	Used for STAR splice junctions and featureCounts
-star_index	STAR genome index directory	/path/to/star_index	custom_build	Optional if pre-built instead of generated in step 00
+star_index	STAR genome index directory	/path/to/star_index	custom_build	Set STAR_INDEX_MODE=use_existing to use this pre-built index; build mode regenerates it

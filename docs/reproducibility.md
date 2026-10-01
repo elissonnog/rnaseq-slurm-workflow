@@ -24,6 +24,13 @@ Local validation for this repository is structural:
 - Perl syntax
 - optional R utility parse validation
 - experiment generation
+- normalized sample-manifest validation
+- Slurm-spooled script relocation with fake tool execution
+- manifest-ordered featureCounts argument construction
+- Nextflow and Slurm wrapper command construction with fake executables
 - Slurm submission-order dry run
+- exact two-sample synthetic STAR count-matrix comparison when R and edgeR are available
 
 End-to-end biological execution still requires real FASTQ inputs, reference assets, and the external command-line tools listed in `README.md`.
+
+Scheduler resources and tool threads are separate settings. The generated scripts reject configured thread counts above `SLURM_CPUS_PER_TASK` when that Slurm variable is present, but memory, wall time, queue/partition, index parameters, strandedness, count unit, and QC thresholds remain dataset- and site-specific scientific/operational choices rather than validated universal defaults.

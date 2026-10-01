@@ -24,6 +24,13 @@ load_rnaseq_config() {
   COUNTS_DIR="${COUNTS_DIR:-$projPath/counts}"
   MULTIQC_DIR="${MULTIQC_DIR:-$projPath/multiqc}"
   STAR_INDEX_DIR="${STAR_INDEX_DIR:-$projPath/reference/star_index}"
+  STAR_INDEX_MODE="${STAR_INDEX_MODE:-build}"
+  FASTQC_THREADS="${FASTQC_THREADS:-2}"
+  TRIM_GALORE_CORES="${TRIM_GALORE_CORES:-4}"
+  STAR_INDEX_THREADS="${STAR_INDEX_THREADS:-16}"
+  STAR_ALIGN_THREADS="${STAR_ALIGN_THREADS:-12}"
+  FEATURECOUNTS_THREADS="${FEATURECOUNTS_THREADS:-12}"
+  FEATURECOUNTS_COUNT_UNIT="${FEATURECOUNTS_COUNT_UNIT:-read}"
 }
 
 load_module_if_set() {
@@ -51,6 +58,34 @@ require_file() {
   local path="$1"
   if [[ ! -f "$path" ]]; then
     printf 'Required file not found: %s\n' "$path" >&2
+    exit 1
+  fi
+}
+
+require_dir() {
+  local path="$1"
+  if [[ ! -d "$path" ]]; then
+    printf 'Required directory not found: %s\n' "$path" >&2
+    exit 1
+  fi
+}
+
+require_command() {
+  local command_name="$1"
+  if ! command -v "$command_name" >/dev/null 2>&1; then
+    printf 'Required command not found on PATH: %s\n' "$command_name" >&2
+    exit 1
+  fi
+}
+
+require_threads_within_allocation() {
+  local var_name="$1" requested="${!1:-}"
+  if [[ ! "$requested" =~ ^[1-9][0-9]*$ ]]; then
+    printf '%s must be a positive integer; got: %s\n' "$var_name" "$requested" >&2
+    exit 1
+  fi
+  if [[ -n "${SLURM_CPUS_PER_TASK:-}" ]] && (( requested > SLURM_CPUS_PER_TASK )); then
+    printf '%s=%s exceeds SLURM_CPUS_PER_TASK=%s\n' "$var_name" "$requested" "$SLURM_CPUS_PER_TASK" >&2
     exit 1
   fi
 }

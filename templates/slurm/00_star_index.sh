@@ -9,14 +9,26 @@
 
 set -euo pipefail
 
-source "$(dirname "$0")/common.sh"
+source "$common_sh"
 load_rnaseq_config
 load_module_if_set "${STAR_MODULE:-}"
+
+case "${STAR_INDEX_MODE:-build}" in
+  use_existing)
+    require_dir "$STAR_INDEX_DIR"
+    printf 'Using existing STAR index: %s\n' "$STAR_INDEX_DIR"
+    exit 0
+    ;;
+  build) ;;
+  *) printf 'STAR_INDEX_MODE must be build or use_existing\n' >&2; exit 1 ;;
+esac
 
 require_var STAR_FASTA
 require_var STAR_GTF
 require_file "$STAR_FASTA"
 require_file "$STAR_GTF"
+require_command STAR
+require_threads_within_allocation STAR_INDEX_THREADS
 
 mkdir -p "$STAR_INDEX_DIR"
 

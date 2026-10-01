@@ -20,6 +20,8 @@ Then edit:
 
 - `demo_run/pipeline.env`
 
+The generated scripts contain absolute paths to their shared helper and normalized sample manifest, so Slurm may spool a script away from the experiment directory. The analysis directory is also normalized to an absolute path.
+
 Dry-run the submission chain:
 
 ```bash
@@ -36,8 +38,12 @@ bin/rnaseq-submit --experiment-dir demo_run
 
 Copy and edit:
 
-- `config/nextflow.env.example`
+- `config/nextflow.env.example` to `config/nextflow.env`
 - `examples/nextflow/samplesheet.csv`
+
+```bash
+cp config/nextflow.env.example config/nextflow.env
+```
 
 Run directly:
 
@@ -50,3 +56,5 @@ Or submit through Slurm:
 ```bash
 bash nextflow/submit_nfcore_rnaseq.sh config/nextflow.env
 ```
+
+Run from an environment where Bash and Nextflow are on `PATH`, or set the optional module/Conda site configuration. The Slurm templates similarly expect Bash plus either configured environment modules or each bioinformatics executable on `PATH`.

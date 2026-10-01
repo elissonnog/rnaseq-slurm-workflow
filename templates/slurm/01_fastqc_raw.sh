@@ -9,7 +9,7 @@
 
 set -euo pipefail
 
-source "$(dirname "$0")/common.sh"
+source "$common_sh"
 load_rnaseq_config
 load_module_if_set "${FASTQC_MODULE:-}"
 
@@ -18,6 +18,8 @@ read2="$FASTQ_DIR/${sample}${READ2_SUFFIX}"
 
 require_file "$read1"
 require_file "$read2"
+require_command fastqc
+require_threads_within_allocation FASTQC_THREADS
 mkdir -p "$RAW_FASTQC_DIR"
 
 fastqc \

@@ -3,9 +3,11 @@ use strict;
 use warnings;
 
 use FindBin qw($RealBin);
+use Cwd qw(abs_path);
 use File::Basename qw(dirname);
 use File::Copy qw(copy);
 use File::Path qw(make_path);
+use File::Spec;
 use Getopt::Long qw(GetOptions);
 
 my %opt = (
@@ -41,6 +43,7 @@ for my $required (qw(project_dir sample_file experiment output_dir repo_root)) {
 }
 
 die "Sample file not found: $opt{sample_file}\n" if !-f $opt{sample_file};
+$opt{project_dir} = File::Spec->rel2abs($opt{project_dir});
 
 my $template_dir = "$opt{repo_root}/templates/slurm";
 my $config_dir   = "$opt{repo_root}/config";
@@ -54,9 +57,11 @@ my @samples = read_samples($opt{sample_file});
 die "No sample IDs found in $opt{sample_file}\n" if !@samples;
 
 make_path($opt{output_dir}) unless -d $opt{output_dir};
-my $rendered_sample_file = "$opt{output_dir}/samples.txt";
-copy($opt{sample_file}, $rendered_sample_file)
-    or die "Failed to copy sample file to $rendered_sample_file: $!\n";
+my $output_dir_abs = abs_path($opt{output_dir})
+    or die "Cannot resolve output directory: $opt{output_dir}\n";
+my $rendered_sample_file = "$output_dir_abs/samples.txt";
+write_samples($rendered_sample_file, @samples);
+my $rendered_common_sh = "$output_dir_abs/common.sh";
 
 my @templates = (
     [ "$template_dir/common.sh", 'common.sh', 'single' ],
@@ -73,27 +78,28 @@ for my $template (@templates) {
     my ($input_file, $output_name, $template_type) = @$template;
     render_template(
         input_file   => $input_file,
-        output_file  => "$opt{output_dir}/$output_name",
+        output_file  => "$output_dir_abs/$output_name",
         sample_count => scalar @samples,
         project_dir  => $opt{project_dir},
         sample_file  => $rendered_sample_file,
+        common_sh    => $rendered_common_sh,
         mail_user    => $opt{mail_user},
         template_type => $template_type,
     );
 }
 
-copy_if_missing("$config_dir/pipeline.env.example", "$opt{output_dir}/pipeline.env");
-copy("$scripts_dir/submit_chain.pl", "$opt{output_dir}/submit_chain.pl")
+copy_if_missing("$config_dir/pipeline.env.example", "$output_dir_abs/pipeline.env");
+copy("$scripts_dir/submit_chain.pl", "$output_dir_abs/submit_chain.pl")
     or die "Failed to copy submit_chain.pl: $!\n";
-chmod 0755, "$opt{output_dir}/submit_chain.pl"
-    or die "Cannot chmod $opt{output_dir}/submit_chain.pl: $!\n";
+chmod 0755, "$output_dir_abs/submit_chain.pl"
+    or die "Cannot chmod $output_dir_abs/submit_chain.pl: $!\n";
 
-print "Experiment directory created: $opt{output_dir}\n";
+print "Experiment directory created: $output_dir_abs\n";
 print "Samples detected: " . scalar(@samples) . "\n";
-print "Copied sample manifest to: $rendered_sample_file\n";
+print "Normalized sample manifest written to: $rendered_sample_file\n";
 print "Next steps:\n";
-print "  1. Edit $opt{output_dir}/pipeline.env\n";
-print "  2. Dry-run submission with: perl $opt{output_dir}/submit_chain.pl --dry-run\n";
+print "  1. Edit $output_dir_abs/pipeline.env\n";
+print "  2. Dry-run submission with: perl $output_dir_abs/submit_chain.pl --experiment-dir $output_dir_abs --dry-run\n";
 
 sub usage {
     return <<"USAGE";
@@ -131,16 +137,32 @@ sub read_samples {
     open my $fh, '<', $sample_file or die "Cannot open $sample_file: $!\n";
 
     my @samples;
+    my %seen;
+    my $line_number = 0;
     while (my $line = <$fh>) {
+        $line_number++;
         chomp $line;
         $line =~ s/\r$//;
+        $line =~ s/^\s+//;
+        $line =~ s/\s+$//;
         next if $line =~ /^\s*$/;
         next if $line =~ /^\s*#/;
+        die "Unsafe sample ID at $sample_file line $line_number: $line\n"
+            if $line !~ /\A[A-Za-z0-9][A-Za-z0-9._-]*\z/;
+        die "Duplicate sample ID at $sample_file line $line_number: $line\n"
+            if $seen{$line}++;
         push @samples, $line;
     }
 
     close $fh;
     return @samples;
+}
+
+sub write_samples {
+    my ($path, @samples) = @_;
+    open my $fh, '>', $path or die "Cannot write $path: $!\n";
+    print {$fh} "$_\n" for @samples;
+    close $fh or die "Cannot close $path: $!\n";
 }
 
 sub shell_single_quote {
@@ -158,6 +180,7 @@ sub render_template {
 
     my $project_q = shell_single_quote($args{project_dir});
     my $sample_q  = shell_single_quote($args{sample_file});
+    my $common_q  = shell_single_quote($args{common_sh});
 
     my @replacement;
 
@@ -173,7 +196,8 @@ sub render_template {
 
     push @replacement,
         "projPath=$project_q\n",
-        "sample_file=$sample_q\n";
+        "sample_file=$sample_q\n",
+        "common_sh=$common_q\n";
 
     if ($args{template_type} eq 'array') {
         push @replacement,
