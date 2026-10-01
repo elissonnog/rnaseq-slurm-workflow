@@ -1,0 +1,7 @@
+sbatch <experiment_dir>/00_star_index.sh
+sbatch --dependency=afterok:DRYRUN1 <experiment_dir>/01_fastqc_raw.sh
+sbatch --dependency=afterok:DRYRUN2 <experiment_dir>/02_trim_galore.sh
+sbatch --dependency=afterok:DRYRUN3 <experiment_dir>/03_star_align.sh
+sbatch --dependency=afterok:DRYRUN4 <experiment_dir>/04_samtools_index.sh
+sbatch --dependency=afterok:DRYRUN5 <experiment_dir>/05_featurecounts.sh
+sbatch --dependency=afterok:DRYRUN6 <experiment_dir>/06_multiqc.sh

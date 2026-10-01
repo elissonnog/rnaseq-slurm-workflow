@@ -1,0 +1,13 @@
+name: repository-smoke-test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  orchestration-smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Bash and Perl smoke test
+        run: bash tests/smoke/run_slurm_smoke.sh
