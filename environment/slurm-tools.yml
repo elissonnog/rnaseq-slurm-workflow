@@ -1,4 +1,4 @@
-name: rnaseq-slurm-review
+name: rnaseq-slurm
 channels:
   - conda-forge
   - bioconda
